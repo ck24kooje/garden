@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>정원 관리자</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #fdf4f8;
+    --paper-deep: #f6e6f0;
+    --card: #ffffff;
+    --line: #f1e0ec;
+    --ink: #4a2f45;
+    --ink-soft: #8a6a82;
+    --primary: #b85cc0;
+    --primary-deep: #8e3fa0;
+    --joy: #ff7ab3;
+    --calm: #a98be0;
+    --sad: #8f80dc;
+    --angry: #e0306f;
+    --anxious: #7f5ccb;
+    --tired: #c48aae;
+    --good: #2f9e6e;
+    --warn: #d97706;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Gowun Dodum", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 15% 0%, rgba(255, 182, 216, .35), transparent 40%),
+      radial-gradient(circle at 90% 20%, rgba(201, 178, 255, .3), transparent 45%),
+      var(--paper);
+    min-height: 100vh;
+  }
+  .layout { display: grid; grid-template-columns: 232px 1fr; min-height: 100vh; }
+
+  /* 사이드바 */
+  aside {
+    background: rgba(255, 255, 255, .7);
+    border-right: 1px solid var(--line);
+    padding: 22px 16px;
+    position: sticky; top: 0; height: 100vh;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-size: 17px; margin: 0 8px 4px; }
+  .brand small { display: block; font-size: 11px; color: var(--ink-soft); }
+  nav { margin-top: 26px; display: flex; flex-direction: column; gap: 4px; }
+  nav a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 12px;
+    color: var(--ink-soft); text-decoration: none; font-size: 14.5px;
+  }
+  nav a:hover { background: var(--paper-deep); color: var(--ink); }
+  nav a.active { background: linear-gradient(90deg, #f6e1f3, #efe6fd); color: var(--primary-deep); }
+  nav svg { width: 18px; height: 18px; flex: none; }
+  .side-note {
+    position: absolute; left: 16px; right: 16px; bottom: 20px;
+    font-size: 12px; line-height: 1.6; color: var(--ink-soft);
+    background: #fbeff7; border-radius: 14px; padding: 12px;
+  }
+
+  main { padding: 26px 32px 48px; min-width: 0; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  h1 { font-size: 24px; font-weight: 400; margin: 0; }
+  .sub { color: var(--ink-soft); font-size: 13.5px; margin-top: 4px; }
+  .controls { display: flex; gap: 8px; }
+  .seg { display: inline-flex; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 3px; }
+  .seg button {
+    border: 0; background: transparent; font: inherit; font-size: 13px; color: var(--ink-soft);
+    padding: 7px 12px; border-radius: 9px; cursor: pointer;
+  }
+  .seg button.on { background: var(--primary); color: #fff; }
+  .btn {
+    border: 1px solid var(--line); background: #fff; color: var(--ink);
+    font: inherit; font-size: 13px; padding: 8px 14px; border-radius: 12px; cursor: pointer;
+  }
+  .demo-banner {
+    margin-top: 16px; padding: 10px 14px; border-radius: 14px;
+    background: #f4ecff; color: #6a3fa0; font-size: 13px;
+  }
+
+  /* KPI */
+  .kpis { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; margin-top: 20px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 18px; box-shadow: 0 4px 18px rgba(184, 92, 192, .06); }
+  .kpi .label { font-size: 13px; color: var(--ink-soft); }
+  .kpi .value { font-size: 28px; margin-top: 6px; letter-spacing: -.5px; }
+  .kpi .value small { font-size: 14px; color: var(--ink-soft); margin-left: 2px; }
+  .delta { font-size: 12.5px; margin-top: 4px; }
+  .up { color: var(--good); } .down { color: var(--angry); } .flat { color: var(--ink-soft); }
+
+  .grid2 { display: grid; grid-template-columns: 1.6fr 1fr; gap: 14px; margin-top: 14px; }
+  .card h2 { font-size: 16px; font-weight: 400; margin: 0; }
+  .card .hint { font-size: 12.5px; color: var(--ink-soft); margin-top: 3px; }
+
+  /* 막대 차트 */
+  .bars { display: flex; align-items: flex-end; gap: 6px; height: 250px; margin-top: 18px; padding-bottom: 22px; position: relative; }
+  .bar { flex: 1; position: relative; border-radius: 8px 8px 4px 4px; background: linear-gradient(180deg, #d79be0, #b85cc0); min-width: 0; }
+  .bar.today { background: linear-gradient(180deg, #ffa3ce, #ff7ab3); }
+  .bar span { position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--ink-soft); white-space: nowrap; }
+  .bar b { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 11px; font-weight: 400; color: var(--ink-soft); }
+  .gridline { position: absolute; left: 0; right: 0; border-top: 1px dashed var(--line); }
+
+  /* 감정 분포 */
+  .emo-list { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .emo-row { display: grid; grid-template-columns: 74px 1fr 46px; align-items: center; gap: 10px; font-size: 14px; }
+  .emo-row .track { height: 12px; background: var(--paper-deep); border-radius: 99px; overflow: hidden; }
+  .emo-row .fill { height: 100%; border-radius: 99px; }
+  .emo-row .pct { text-align: right; color: var(--ink-soft); font-size: 13px; }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+  .weather-box { margin-top: 18px; padding: 12px 14px; border-radius: 14px; background: #fbeff7; font-size: 13px; line-height: 1.6; }
+
+  /* 퍼널·리텐션 */
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+  .funnel { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+  .step { display: grid; grid-template-columns: 120px 1fr 72px; align-items: center; gap: 10px; font-size: 13.5px; }
+  .step .track { height: 26px; background: var(--paper-deep); border-radius: 9px; overflow: hidden; }
+  .step .fill { height: 100%; background: linear-gradient(90deg, #c9b2ff, #b85cc0); border-radius: 9px; }
+  .step .num { text-align: right; font-size: 13px; color: var(--ink-soft); }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th { text-align: left; font-weight: 400; color: var(--ink-soft); font-size: 12.5px; padding: 10px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  td { padding: 11px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  tr:last-child td { border-bottom: 0; }
+  .cohort td.c { text-align: center; border-radius: 6px; color: #fff; font-size: 12.5px; }
+
+  /* 사용자 표 */
+  .users { margin-top: 14px; }
+  .table-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .search { border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; font: inherit; font-size: 13px; width: 220px; background: #fff; color: var(--ink); }
+  .table-wrap { overflow-x: auto; margin-top: 10px; }
+  .pill { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 12px; }
+  .pill.active { background: #e6f6ee; color: #23784f; }
+  .pill.idle { background: #fff4e0; color: #9a5b00; }
+  .pill.left { background: #f3eef2; color: #8a6a82; }
+  .privacy { display: flex; gap: 8px; align-items: flex-start; margin-top: 12px; font-size: 12.5px; color: var(--ink-soft); }
+
+  @media (max-width: 1180px) {
+    .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    aside { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); padding: 14px 16px; }
+    nav { flex-direction: row; overflow-x: auto; margin-top: 12px; }
+    nav a { white-space: nowrap; }
+    .side-note { display: none; }
+    main { padding: 20px 16px 40px; }
+    .grid2, .grid3 { grid-template-columns: 1fr; }
+    .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside>
+    <div class="brand">
+      <svg width="30" height="30" viewBox="-16 -28 32 32" aria-hidden="true">
+        <ellipse cx="0" cy="0" rx="11" ry="3" fill="#8A5F78"/>
+        <path d="M0 0 Q -1 -9 0 -16" stroke="#82B193" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+        <path d="M0 -9 C 4 -15, 11 -15, 13 -11 C 9 -7, 4 -7, 0 -9 Z" fill="#9CC9AA"/>
+        <path d="M0 -12 C -4 -18, -10 -18, -12 -14 C -9 -10, -4 -10, 0 -12 Z" fill="#AED5BA"/>
+        <circle cx="0" cy="-19" r="4" fill="#FF7AB3"/>
+      </svg>
+      <div>감정이 자라는 정원<small>관리자</small></div>
+    </div>
+    <nav>
+      <a class="active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>대시보드</a>
+      <a href="#users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .7 3.2 2.5 3.6 5.2"/></svg>사용자</a>
+      <a href="#emotions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21c-1.5-4-1-8 0-11"/><circle cx="12" cy="7" r="3.5"/><path d="M12 15c-2.5-.5-4.5-2-5-4.5 2.5 0 4.5 1.5 5 4.5ZM12 13c2.5-.5 4.5-2 5-4.5-2.5 0-4.5 1.5-5 4.5Z"/></svg>감정 통계</a>
+      <a href="#retention"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5M4 19h16"/><path d="m7 15 4-4 3 3 5-6"/></svg>유지율</a>
+      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v11H8l-4 4V5Z"/></svg>문의·신고</a>
+      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg>설정</a>
+    </nav>
+    <div class="side-note">🔒 일기 문장과 사진은 관리자도 볼 수 없어요. 이 화면에는 집계된 숫자만 보여요.</div>
+  </aside>
+
+  <main>
+    <div class="topbar">
+      <div>
+        <h1>오늘의 정원 운영 현황</h1>
+        <div class="sub">2026년 10월 30일 (목) · 기준 시각 오후 3:00 (KST)</div>
+      </div>
+      <div class="controls">
+        <div class="seg"><button>오늘</button><button class="on">14일</button><button>30일</button></div>
+        <button class="btn">CSV 내보내기</button>
+      </div>
+    </div>
+    <div class="demo-banner">📝 화면 시안입니다. 숫자는 모두 샘플 데이터이며 실제 데이터베이스와 연결되어 있지 않아요.</div>
+
+    <!-- KPI -->
+    <section class="kpis">
+      <div class="card kpi"><div class="label">전체 가입자</div><div class="value">1,284<small>명</small></div><div class="delta up">▲ 이번 주 +96</div></div>
+      <div class="card kpi"><div class="label">오늘 심은 식물</div><div class="value">312<small>그루</small></div><div class="delta up">▲ 어제보다 +8%</div></div>
+      <div class="card kpi"><div class="label">일간 활성 사용자</div><div class="value">347<small>명</small></div><div class="delta flat">가입자의 27%</div></div>
+      <div class="card kpi"><div class="label">7일 유지율</div><div class="value">41<small>%</small></div><div class="delta down">▼ 지난주 대비 -2%p</div></div>
+      <div class="card kpi"><div class="label">평균 기록 시간</div><div class="value">24<small>초</small></div><div class="delta up">목표 30초 이내 ✓</div></div>
+    </section>
+
+    <!-- 기록 추이 + 감정 분포 -->
+    <section class="grid2">
+      <div class="card">
+        <h2>최근 14일 기록 수</h2>
+        <div class="hint">하루에 심어진 식물 수 (사용자당 하루 1그루)</div>
+        <div class="bars" id="bars"></div>
+      </div>
+      <div class="card" id="emotions">
+        <h2>최근 14일 감정 분포</h2>
+        <div class="hint">전체 사용자 기록 4,016건 기준</div>
+        <div class="emo-list">
+          <div class="emo-row"><div><span class="dot" style="background:var(--joy)"></span>기쁨</div><div class="track"><div class="fill" style="width:29%;background:var(--joy)"></div></div><div class="pct">29%</div></div>
+          <div class="emo-row"><div><span class="dot" style="background:var(--calm)"></span>평온</div><div class="track"><div class="fill" style="width:22%;background:var(--calm)"></div></div><div class="pct">22%</div></div>
+          <div class="emo-row"><div><span class="dot" style="background:var(--tired)"></span>지침</div><div class="track"><div class="fill" style="width:18%;background:var(--tired)"></div></div><div class="pct">18%</div></div>
+          <div class="emo-row"><div><span class="dot" style="background:var(--sad)"></span>슬픔</div><div class="track"><div class="fill" style="width:13%;background:var(--sad)"></div></div><div class="pct">13%</div></div>
+          <div class="emo-row"><div><span class="dot" style="background:var(--anxious)"></span>불안</div><div class="track"><div class="fill" style="width:11%;background:var(--anxious)"></div></div><div class="pct">11%</div></div>
+          <div class="emo-row"><div><span class="dot" style="background:var(--angry)"></span>화남</div><div class="track"><div class="fill" style="width:7%;background:var(--angry)"></div></div><div class="pct">7%</div></div>
+        </div>
+        <div class="weather-box">☀️ 전체 정원 날씨: <b style="font-weight:400;color:var(--primary-deep)">맑음</b><br>시험 기간이 끝난 주부터 '지침'이 줄고 '기쁨'이 늘었어요.</div>
+      </div>
+    </section>
+
+    <!-- 퍼널 + 리텐션 -->
+    <section class="grid3" id="retention">
+      <div class="card">
+        <h2>첫 기록까지의 흐름</h2>
+        <div class="hint">최근 14일 신규 방문자 기준</div>
+        <div class="funnel">
+          <div class="step"><div>랜딩 방문</div><div class="track"><div class="fill" style="width:100%"></div></div><div class="num">2,140</div></div>
+          <div class="step"><div>회원가입</div><div class="track"><div class="fill" style="width:24%"></div></div><div class="num">512 · 24%</div></div>
+          <div class="step"><div>첫 식물 심기</div><div class="track"><div class="fill" style="width:20%"></div></div><div class="num">428 · 84%</div></div>
+          <div class="step"><div>다음 날 재방문</div><div class="track"><div class="fill" style="width:12%"></div></div><div class="num">257 · 60%</div></div>
+          <div class="step"><div>7일째 기록</div><div class="track"><div class="fill" style="width:8%"></div></div><div class="num">175 · 41%</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>주간 가입자 유지율</h2>
+        <div class="hint">가입 주차별로 N주 뒤에도 기록한 비율</div>
+        <div class="table-wrap">
+          <table class="cohort">
+            <thead><tr><th>가입 주</th><th>인원</th><th>1주</th><th>2주</th><th>3주</th><th>4주</th></tr></thead>
+            <tbody>
+              <tr><td>9/29 주</td><td>88</td><td class="c" style="background:#b85cc0">52%</td><td class="c" style="background:#c47ccb">40%</td><td class="c" style="background:#d19ad6">33%</td><td class="c" style="background:#dbb0df">29%</td></tr>
+              <tr><td>10/6 주</td><td>104</td><td class="c" style="background:#b85cc0">55%</td><td class="c" style="background:#c47ccb">43%</td><td class="c" style="background:#d19ad6">35%</td><td></td></tr>
+              <tr><td>10/13 주</td><td>131</td><td class="c" style="background:#bf6fc7">49%</td><td class="c" style="background:#cc8dd1">38%</td><td></td><td></td></tr>
+              <tr><td>10/20 주</td><td>142</td><td class="c" style="background:#bf6fc7">47%</td><td></td><td></td><td></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 사용자 목록 -->
+    <section class="card users" id="users">
+      <div class="table-head">
+        <div><h2>사용자</h2><div class="hint">활동 정보만 보여요. 기록 내용은 표시되지 않아요.</div></div>
+        <input class="search" type="search" placeholder="닉네임 또는 이메일 검색">
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>닉네임</th><th>이메일</th><th>가입일</th><th>최근 기록</th><th>누적 식물</th><th>연속 기록</th><th>상태</th></tr></thead>
+          <tbody>
+            <tr><td>지민</td><td>ji***@gmail.com</td><td>2026-09-02</td><td>오늘</td><td>58</td><td>21일 🔥</td><td><span class="pill active">활동 중</span></td></tr>
+            <tr><td>하늘정원</td><td>sk***@naver.com</td><td>2026-09-15</td><td>오늘</td><td>41</td><td>9일</td><td><span class="pill active">활동 중</span></td></tr>
+            <tr><td>민트초코</td><td>mi***@kakao.com</td><td>2026-10-01</td><td>어제</td><td>27</td><td>4일</td><td><span class="pill active">활동 중</span></td></tr>
+            <tr><td>새벽감성</td><td>da***@gmail.com</td><td>2026-10-08</td><td>3일 전</td><td>12</td><td>0일</td><td><span class="pill idle">쉬는 중</span></td></tr>
+            <tr><td>정원사</td><td>ga***@daum.net</td><td>2026-10-19</td><td>9일 전</td><td>3</td><td>0일</td><td><span class="pill idle">쉬는 중</span></td></tr>
+            <tr><td>보라빛</td><td>bo***@gmail.com</td><td>2026-08-27</td><td>32일 전</td><td>19</td><td>0일</td><td><span class="pill left">휴면</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="privacy">🔒 <span>개인정보 보호 원칙: 이메일은 일부만 보이고, 일기 문장·사진·감정별 개인 기록은 데이터베이스 접근 정책(RLS)에 따라 관리자에게도 공개되지 않아요.</span></div>
+    </section>
+  </main>
+</div>
+
+<script>
+  // 최근 14일 기록 수 (샘플)
+  const data = [182, 196, 210, 205, 188, 164, 171, 224, 241, 236, 252, 247, 288, 312];
+  const labels = ["10/17","10/18","10/19","10/20","10/21","10/22","10/23","10/24","10/25","10/26","10/27","10/28","10/29","오늘"];
+  const max = 350;
+  const wrap = document.getElementById("bars");
+  [100, 200, 300].forEach(v => {
+    const g = document.createElement("div");
+    g.className = "gridline";
+    g.style.bottom = (22 + (v / max) * 228) + "px";
+    wrap.appendChild(g);
+  });
+  data.forEach((v, i) => {
+    const b = document.createElement("div");
+    b.className = "bar" + (i === data.length - 1 ? " today" : "");
+    b.style.height = (v / max) * 228 + "px";
+    b.title = labels[i] + " · " + v + "그루";
+    b.innerHTML = "<b>" + v + "</b>" + (i % 2 === 1 || i === data.length - 1 ? "<span>" + labels[i] + "</span>" : "");
+    wrap.appendChild(b);
+  });
+  // 기간 버튼 (시안: 선택 표시만)
+  document.querySelectorAll(".seg button").forEach(btn => btn.addEventListener("click", () => {
+    document.querySelectorAll(".seg button").forEach(b => b.classList.remove("on"));
+    btn.classList.add("on");
+  }));
+</script>
+</body>
+</html>

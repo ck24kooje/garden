@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>정원 화면 모음</title>
+<style>
+  body { margin: 0; font-family: "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif; color: #4a2f45;
+         background: radial-gradient(circle at 15% 0%, rgba(255,182,216,.35), transparent 40%), radial-gradient(circle at 90% 20%, rgba(201,178,255,.3), transparent 45%), #fdf4f8; min-height: 100vh; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 40px 16px; }
+  h1 { font-weight: 500; font-size: 26px; margin: 0; }
+  p.sub { color: #8a6a82; margin: 6px 0 28px; font-size: 14px; }
+  h2 { font-size: 15px; font-weight: 500; color: #8e3fa0; margin: 28px 0 10px; }
+  .list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+  a { display: block; padding: 14px 16px; background: #fff; border: 1px solid #f1e0ec; border-radius: 16px; text-decoration: none; color: inherit; }
+  a:hover { border-color: #b85cc0; }
+  a b { display: block; font-weight: 500; }
+  a span { font-size: 12.5px; color: #8a6a82; }
+  .note { margin-top: 28px; font-size: 12.5px; color: #8a6a82; line-height: 1.7; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🌷 감정이 자라는 정원 · 화면 모음</h1>
+  <p class="sub">파일을 더블클릭하면 브라우저에서 열려요. 서버 없이도 볼 수 있어요.</p>
+
+  <h2>프론트 화면 (사용자용)</h2>
+  <div class="list">
+    <a href="front/01-landing.html"><b>01 랜딩</b><span>서비스 소개 · 정원 예시</span></a>
+    <a href="front/02-signup.html"><b>02 회원가입</b><span>닉네임 · 이메일 · 비밀번호</span></a>
+    <a href="front/03-login.html"><b>03 로그인</b><span>이메일 로그인</span></a>
+    <a href="front/04-garden.html"><b>04 내 정원</b><span>월별 정원 · 날씨 · 감정 요약</span></a>
+    <a href="front/05-record.html"><b>05 오늘의 기록</b><span>감정 선택 · 한 줄 · 사진</span></a>
+    <a href="front/06-entry-detail.html"><b>06 그날의 기록</b><span>식물을 눌렀을 때 보는 기록</span></a>
+  </div>
+
+  <h2>어드민 화면 (관리자용)</h2>
+  <div class="list">
+    <a href="admin/admin-dashboard.html"><b>관리자 대시보드</b><span>가입·기록·감정 통계 · 사용자 목록 (시안)</span></a>
+  </div>
+
+  <p class="note">
+    · 프론트 화면은 실제 앱 화면을 저장한 정적 사본이에요. 버튼은 화면 간 이동만 되고, 저장·로그인 같은 동작은 하지 않아요.<br>
+    · 로그인 후 화면(04~06)은 예시 데이터로 그렸어요.<br>
+    · 어드민 화면은 새로 디자인한 시안이며, 숫자는 모두 샘플 데이터예요.
+  </p>
+</div>
+</body>
+</html>
